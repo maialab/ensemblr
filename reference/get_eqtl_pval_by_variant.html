@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Is the Ensembl REST API server reachable? — is_ensembl_reachable • ensemblr</title>
+<title>Get eQTL details by variant identifier — get_eqtl_pval_by_variant • ensemblr</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,12 +48,9 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Is the Ensembl REST API server reachable? — is_ensembl_reachable" />
-<meta property="og:description" content="Check if the Ensembl server where REST API service is running is reachable.
-This function attempts to connect to
-https://rest.ensembl.org, returning
-TRUE on success, and FALSE otherwise. Set verbose = TRUE
-for a step by step description of the connection attempt." />
+<meta property="og:title" content="Get eQTL details by variant identifier — get_eqtl_pval_by_variant" />
+<meta property="og:description" content="This function retrieves genes (Ensembl identifier) along with beta values and
+p-values for the eQTL association." />
 <meta property="og:image" content="https://maialab.org/ensemblr/logo.png" />
 
 
@@ -134,53 +131,90 @@ for a step by step description of the connection attempt." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Is the Ensembl REST API server reachable?</h1>
-    <small class="dont-index">Source: <a href='https://github.com/maialab/ensemblr/blob/master/R/ensembl_server.R'><code>R/ensembl_server.R</code></a></small>
-    <div class="hidden name"><code>is_ensembl_reachable.Rd</code></div>
+    <h1>Get eQTL details by variant identifier</h1>
+    <small class="dont-index">Source: <a href='https://github.com/maialab/ensemblr/blob/master/R/get_eqtl_pval_by_variant.R'><code>R/get_eqtl_pval_by_variant.R</code></a></small>
+    <div class="hidden name"><code>get_eqtl_pval_by_variant.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Check if the Ensembl server where REST API service is running is reachable.
-This function attempts to connect to
-<a href='https://rest.ensembl.org'>https://rest.ensembl.org</a>, returning
-<code>TRUE</code> on success, and <code>FALSE</code> otherwise. Set <code>verbose = TRUE</code>
-for a step by step description of the connection attempt.</p>
+    <p>This function retrieves genes (Ensembl identifier) along with beta values and
+p-values for the eQTL association.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>is_ensembl_reachable</span><span class='op'>(</span>url <span class='op'>=</span> <span class='fu'><a href='ensembl_server.html'>ensembl_server</a></span><span class='op'>(</span><span class='op'>)</span>, port <span class='op'>=</span> <span class='fl'>443L</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_eqtl_pval_by_variant</span><span class='op'>(</span>
+  <span class='va'>variant_id</span>,
+  species_name <span class='op'>=</span> <span class='st'>"homo_sapiens"</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  warnings <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  progress_bar <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>url</th>
-      <td><p>Ensembl REST API server URL. Default is
-<a href='https://rest.ensembl.org'>https://rest.ensembl.org</a>. You should not need to change this parameter.</p></td>
+      <th>variant_id</th>
+      <td><p>A variant identifier, e.g. <code>"rs80100814"</code>.</p></td>
     </tr>
     <tr>
-      <th>port</th>
-      <td><p>Network port on which to ping the server. You should not need to
-change this parameter.</p></td>
+      <th>species_name</th>
+      <td><p>The species name, i.e., the scientific name, all letters
+lowercase and space replaced by underscore. Currently, only
+<code>'homo_sapiens'</code> (human) is supported.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>Whether to be verbose (<code>TRUE</code>) or not (<code>FALSE</code>).</p></td>
+      <td><p>Whether to be verbose about the http requests and respective
+responses' status.</p></td>
+    </tr>
+    <tr>
+      <th>warnings</th>
+      <td><p>Whether to show warnings.</p></td>
+    </tr>
+    <tr>
+      <th>progress_bar</th>
+      <td><p>Whether to show a progress bar.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A logical value: <code>TRUE</code> if EBI server is reachable, <code>FALSE</code>
-  otherwise.</p>
+    <p>A <code><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></code> of 6
+variables:</p><dl>
+<dt><code>species_name</code></dt><dd><p>Ensembl species name: this is the name used
+internally by Ensembl to uniquely identify a species by name. It is the
+scientific name but formatted without capitalisation and spacing converted
+with an underscore, e.g., <code>'homo_sapiens'</code>.</p></dd>
+<dt><code>variant_id</code></dt><dd><p>Variant identifier, e.g. <code>"rs80100814"</code>.</p></dd>
+<dt><code>ensembl_id</code></dt><dd><p>An Ensembl stable identifier, e.g.
+<code>"ENSG00000248234378"</code>.</p></dd>
+<dt><code>tissue</code></dt><dd><p>Tissue.</p></dd>
+<dt><code>beta</code></dt><dd><p>The effect size beta of the eQTL association analysis.</p></dd>
+<dt><code>pvalue</code></dt><dd><p>The p-value of the eQTL association analysis.</p></dd>
+
+</dl>
+
+    <h2 class="hasAnchor" id="ensembl-rest-api-endpoints"><a class="anchor" href="#ensembl-rest-api-endpoints"></a>Ensembl REST API endpoints</h2>
+
+    <p><code>get_eqtl_pval_by_variant()</code> makes GET requests to
+<a href='https://rest.ensembl.org/documentation/info/species_variant'>/eqtl/variant_name/:species/:variant_name</a>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Check if the Ensembl Server is reachable</span>
-<span class='fu'>is_ensembl_reachable</span><span class='op'>(</span><span class='op'>)</span> <span class='co'># Returns TRUE or FALSE.</span>
-</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
-<span class='co'># Check if the GWAS Catalog Server is reachable</span>
-<span class='co'># and show exactly at what step is it failing (if that is the case)</span>
-<span class='fu'>is_ensembl_reachable</span><span class='op'>(</span>verbose <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Am I online? Yes.</span></div><div class='output co'>#&gt; <span class='message'>Is there a DNS service running? Yes.</span></div><div class='output co'>#&gt; <span class='message'>Connected to the internet? Yes.</span></div><div class='output co'>#&gt; <span class='message'>Ping'ing rest.ensembl.org on port 443...</span></div><div class='output co'>#&gt; <span class='message'>rest.ensembl.org successfully replied in 113.37 ms.</span></div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='fu'>get_eqtl_pval_by_variant</span><span class='op'>(</span><span class='st'>'rs80100814'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 452 × 6</span>
+#&gt;    species_name variant_id ensembl_id      tissue                   beta pvalue
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>           <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> homo_sapiens rs80100814 ENSG00000136237 Adipose_Subcutaneous -<span style='color: #BB0000;'>0.009</span><span style='color: #BB0000; text-decoration: underline;'>90</span> 0.953 
+#&gt; <span style='color: #BCBCBC;'> 2</span> homo_sapiens rs80100814 ENSG00000233476 Adipose_Subcutaneous -<span style='color: #BB0000;'>0.027</span><span style='color: #BB0000; text-decoration: underline;'>1</span>  0.835 
+#&gt; <span style='color: #BCBCBC;'> 3</span> homo_sapiens rs80100814 ENSG00000232759 Adipose_Subcutaneous -<span style='color: #BB0000;'>0.331</span>   0.077<span style='text-decoration: underline;'>6</span>
+#&gt; <span style='color: #BCBCBC;'> 4</span> homo_sapiens rs80100814 ENSG00000232949 Adipose_Subcutaneous  0.100   0.647 
+#&gt; <span style='color: #BCBCBC;'> 5</span> homo_sapiens rs80100814 ENSG00000105889 Adipose_Subcutaneous  0.028<span style='text-decoration: underline;'>1</span>  0.893 
+#&gt; <span style='color: #BCBCBC;'> 6</span> homo_sapiens rs80100814 ENSG00000136244 Adipose_Subcutaneous  0.088<span style='text-decoration: underline;'>5</span>  0.551 
+#&gt; <span style='color: #BCBCBC;'> 7</span> homo_sapiens rs80100814 ENSG00000179428 Adipose_Subcutaneous -<span style='color: #BB0000;'>0.261</span>   0.204 
+#&gt; <span style='color: #BCBCBC;'> 8</span> homo_sapiens rs80100814 ENSG00000196683 Adipose_Subcutaneous -<span style='color: #BB0000;'>0.173</span>   0.163 
+#&gt; <span style='color: #BCBCBC;'> 9</span> homo_sapiens rs80100814 ENSG00000228649 Adipose_Subcutaneous  0.090<span style='text-decoration: underline;'>5</span>  0.644 
+#&gt; <span style='color: #BCBCBC;'>10</span> homo_sapiens rs80100814 ENSG00000226329 Adipose_Subcutaneous  0.010<span style='text-decoration: underline;'>3</span>  0.957 
+#&gt; <span style='color: #949494;'># … with 442 more rows</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
