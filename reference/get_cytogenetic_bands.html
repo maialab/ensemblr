@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Is the Ensembl REST API server reachable? — is_ensembl_reachable • ensemblr</title>
+<title>Get cytogenetic bands by species — get_cytogenetic_bands • ensemblr</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,12 +48,10 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Is the Ensembl REST API server reachable? — is_ensembl_reachable" />
-<meta property="og:description" content="Check if the Ensembl server where REST API service is running is reachable.
-This function attempts to connect to
-https://rest.ensembl.org, returning
-TRUE on success, and FALSE otherwise. Set verbose = TRUE
-for a step by step description of the connection attempt." />
+<meta property="og:title" content="Get cytogenetic bands by species — get_cytogenetic_bands" />
+<meta property="og:description" content="This function retrieves cytogenetic bands. If no cytogenetic information is
+available for the queried species then it will be omitted from in the
+returned value." />
 <meta property="og:image" content="https://maialab.org/ensemblr/logo.png" />
 
 
@@ -134,53 +132,96 @@ for a step by step description of the connection attempt." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Is the Ensembl REST API server reachable?</h1>
-    <small class="dont-index">Source: <a href='https://github.com/maialab/ensemblr/blob/master/R/ensembl_server.R'><code>R/ensembl_server.R</code></a></small>
-    <div class="hidden name"><code>is_ensembl_reachable.Rd</code></div>
+    <h1>Get cytogenetic bands by species</h1>
+    <small class="dont-index">Source: <a href='https://github.com/maialab/ensemblr/blob/master/R/get_cytogenetic_bands.R'><code>R/get_cytogenetic_bands.R</code></a></small>
+    <div class="hidden name"><code>get_cytogenetic_bands.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Check if the Ensembl server where REST API service is running is reachable.
-This function attempts to connect to
-<a href='https://rest.ensembl.org'>https://rest.ensembl.org</a>, returning
-<code>TRUE</code> on success, and <code>FALSE</code> otherwise. Set <code>verbose = TRUE</code>
-for a step by step description of the connection attempt.</p>
+    <p>This function retrieves cytogenetic bands. If no cytogenetic information is
+available for the queried species then it will be omitted from in the
+returned value.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>is_ensembl_reachable</span><span class='op'>(</span>url <span class='op'>=</span> <span class='fu'><a href='ensembl_server.html'>ensembl_server</a></span><span class='op'>(</span><span class='op'>)</span>, port <span class='op'>=</span> <span class='fl'>443L</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_cytogenetic_bands</span><span class='op'>(</span>
+  species_name <span class='op'>=</span> <span class='st'>"homo_sapiens"</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  warnings <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  progress_bar <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>url</th>
-      <td><p>Ensembl REST API server URL. Default is
-<a href='https://rest.ensembl.org'>https://rest.ensembl.org</a>. You should not need to change this parameter.</p></td>
-    </tr>
-    <tr>
-      <th>port</th>
-      <td><p>Network port on which to ping the server. You should not need to
-change this parameter.</p></td>
+      <th>species_name</th>
+      <td><p>The species name, i.e., the scientific name, all letters
+lowercase and space replaced by underscore. Examples: <code>'homo_sapiens'</code>
+(human), <code>'ovis_aries'</code> (Domestic sheep) or <code>'capra_hircus'</code>
+(Goat).</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>Whether to be verbose (<code>TRUE</code>) or not (<code>FALSE</code>).</p></td>
+      <td><p>Whether to be chatty.</p></td>
+    </tr>
+    <tr>
+      <th>warnings</th>
+      <td><p>Whether to print warnings.</p></td>
+    </tr>
+    <tr>
+      <th>progress_bar</th>
+      <td><p>Whether to show a progress bar.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A logical value: <code>TRUE</code> if EBI server is reachable, <code>FALSE</code>
-  otherwise.</p>
+    <p>A <code><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></code>, each row being a cytogenetic band,
+of 8 variables:</p><dl>
+<dt><code>species_name</code></dt><dd><p>Ensembl species name: this is the name used internally
+by Ensembl to uniquely identify a species by name. It is the scientific
+name but formatted without capitalisation and spacing converted with an
+underscore, e.g., <code>'homo_sapiens'</code>.</p></dd>
+<dt><code>assembly_name</code></dt><dd><p>Assembly name.</p></dd>
+<dt><code>cytogenetic_band</code></dt><dd><p>Name of the cytogenetic_band.</p></dd>
+<dt><code>chromosome</code></dt><dd><p>Chromosome name.</p></dd>
+<dt><code>start</code></dt><dd><p>Genomic start position of the cytogenetic band. Starts at 1.</p></dd>
+<dt><code>end</code></dt><dd><p>Genomic end position of the cytogenetic band. End position is
+included in the band interval.</p></dd>
+<dt><code>stain</code></dt><dd><p><a href='https://en.wikipedia.org/wiki/Giemsa_stain'>Giemsa
+stain</a> results: Giemsa negative, <code>'gneg'</code>; Giemsa positive, of
+increasing intensities, <code>'gpos25'</code>, <code>'gpos50'</code>, <code>'gpos75'</code>,
+and <code>'gpos100'</code>; centromeric region, <code>'acen'</code>; heterochromatin,
+either pericentric or telomeric, <code>'gvar'</code>; and short arm of
+acrocentric chromosomes are coded as <code>'stalk'</code>.</p></dd>
+<dt><code>strand</code></dt><dd><p>Strand.</p></dd>
+
+</dl>
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Check if the Ensembl Server is reachable</span>
-<span class='fu'>is_ensembl_reachable</span><span class='op'>(</span><span class='op'>)</span> <span class='co'># Returns TRUE or FALSE.</span>
-</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
-<span class='co'># Check if the GWAS Catalog Server is reachable</span>
-<span class='co'># and show exactly at what step is it failing (if that is the case)</span>
-<span class='fu'>is_ensembl_reachable</span><span class='op'>(</span>verbose <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Am I online? Yes.</span></div><div class='output co'>#&gt; <span class='message'>Is there a DNS service running? Yes.</span></div><div class='output co'>#&gt; <span class='message'>Connected to the internet? Yes.</span></div><div class='output co'>#&gt; <span class='message'>Ping'ing rest.ensembl.org on port 443...</span></div><div class='output co'>#&gt; <span class='message'>rest.ensembl.org successfully replied in 148.399 ms.</span></div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='co'># Get toplevel sequences for the human genome (default)</span>
+<span class='fu'>get_cytogenetic_bands</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 862 × 8</span>
+#&gt;    species_name assembly_name cytogenetic_band chromosome    start     end stain
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> homo_sapiens GRCh38        p11.1            Y          10<span style='text-decoration: underline;'>300</span>001  1.04<span style='color: #949494;'>e</span>7 acen 
+#&gt; <span style='color: #BCBCBC;'> 2</span> homo_sapiens GRCh38        p11.2            Y            <span style='text-decoration: underline;'>600</span>001  1.03<span style='color: #949494;'>e</span>7 gneg 
+#&gt; <span style='color: #BCBCBC;'> 3</span> homo_sapiens GRCh38        p11.31           Y            <span style='text-decoration: underline;'>300</span>001  6   <span style='color: #949494;'>e</span>5 gpos…
+#&gt; <span style='color: #BCBCBC;'> 4</span> homo_sapiens GRCh38        p11.32           Y                 1  3   <span style='color: #949494;'>e</span>5 gneg 
+#&gt; <span style='color: #BCBCBC;'> 5</span> homo_sapiens GRCh38        q11.1            Y          10<span style='text-decoration: underline;'>400</span>001  1.06<span style='color: #949494;'>e</span>7 acen 
+#&gt; <span style='color: #BCBCBC;'> 6</span> homo_sapiens GRCh38        q11.21           Y          10<span style='text-decoration: underline;'>600</span>001  1.24<span style='color: #949494;'>e</span>7 gneg 
+#&gt; <span style='color: #BCBCBC;'> 7</span> homo_sapiens GRCh38        q11.221          Y          12<span style='text-decoration: underline;'>400</span>001  1.71<span style='color: #949494;'>e</span>7 gpos…
+#&gt; <span style='color: #BCBCBC;'> 8</span> homo_sapiens GRCh38        q11.222          Y          17<span style='text-decoration: underline;'>100</span>001  1.96<span style='color: #949494;'>e</span>7 gneg 
+#&gt; <span style='color: #BCBCBC;'> 9</span> homo_sapiens GRCh38        q11.223          Y          19<span style='text-decoration: underline;'>600</span>001  2.38<span style='color: #949494;'>e</span>7 gpos…
+#&gt; <span style='color: #BCBCBC;'>10</span> homo_sapiens GRCh38        q11.23           Y          23<span style='text-decoration: underline;'>800</span>001  2.66<span style='color: #949494;'>e</span>7 gneg 
+#&gt; <span style='color: #949494;'># … with 852 more rows, and 1 more variable: strand &lt;int&gt;</span></div><div class='input'>
+<span class='co'># Get toplevel sequences for Caenorhabditis elegans</span>
+<span class='fu'>get_cytogenetic_bands</span><span class='op'>(</span><span class='st'>'caenorhabditis_elegans'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 0 × 8</span>
+#&gt; <span style='color: #949494;'># … with 8 variables: species_name &lt;chr&gt;, assembly_name &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   cytogenetic_band &lt;chr&gt;, chromosome &lt;chr&gt;, start &lt;int&gt;, end &lt;int&gt;,</span>
+#&gt; <span style='color: #949494;'>#   stain &lt;chr&gt;, strand &lt;int&gt;</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
